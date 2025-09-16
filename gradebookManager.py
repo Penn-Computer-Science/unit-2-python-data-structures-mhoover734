@@ -43,9 +43,8 @@ Rubric (40 points total)
 - 10 pts: Correct calculation of averages and top student
 - 10 pts: Clear display of gradebook summary
 '''
-gradebook = {"James": [], "Jonah": [73, 62, 78], "Jeff": [98, 100, 99]}
+gradebook = {"James": [50], "Jonah": [], "Jeff": [98, 100, 99], "Joe": [82, 82], "Jim": [89, 100, 83], "Jared": [94, 94, 97]}
 line_break = "\n"+"-"*30+"\n"
-#[89, 100, 83]
 
 def add_student():
     print(line_break)
@@ -97,11 +96,73 @@ def add_grade():
                                     print("\nReturning to Home.")
                                     return
                                 else:
-                                    print("\nInput not recognized.\n")
+                                    print("\nInput not recognized.\n") #I couldn't explain this function if I tried; it's a web of well-laid hopes & dreams
                         else:
                             print("Grade was over 100 or under 0.")
                     except:
                         print("Grade was not a recognizable integer.")
+        if not(name_recognized):
+            print("\nName not recognized.")
+
+def remove_student():
+    print(line_break)
+    while(True):
+        name_query = input("Input a name to remove from the gradebook (Case sensitive) or type \"Cancel\".\nName: ")
+        if name_query.lower() == "cancel":
+            print("\nReturning to Home.")
+            return
+        for student_name in gradebook:
+            if student_name == name_query:
+                del gradebook[student_name]
+                print(f"\nThe student {student_name} has been removed from the gradebook.")
+                return
+        print("\nName not recognized.\n")
+
+def remove_grade():
+    print(line_break)
+    while(True):
+        name_query = input("Input a name to remove grades from (Case sensitive) or type \"Cancel\".\nName: ")
+        if name_query.lower() == "cancel":
+            print("\nReturning to Home.")
+            return
+        name_recognized = False
+        for student_name in gradebook:
+            if student_name == name_query:
+                name_recognized = True
+                if len(gradebook[student_name]) == 0:
+                    print(f"\nStudent {student_name} has no grades.\n")
+                    break
+                elif len(gradebook[student_name]) == 1:
+                    print(line_break)
+                    while True:
+                        grade_query = input(f"Student {student_name} has only one grade: {gradebook[student_name][0]}.\nInput \"Remove\" to remove the grade or \"Cancel\" to return to name selection.\nRemove: ").lower()
+                        if grade_query == "remove":
+                            print(f"\nRemoved last grade from student {student_name}.")
+                            gradebook[student_name] = []
+                            return
+                        elif grade_query == "cancel":
+                            print("\nReturning to name select.\n"+line_break)
+                            break
+                        else:
+                            print("\nCommand not recognized.\n")
+                    break
+                else:
+                    print(line_break+f"\n{student_name} has {len(gradebook[student_name])} grades: ",end="")
+                    print(*gradebook[student_name],sep=", ")
+                    while True:
+                        grade_query = input("Remove a grade by entering its value, or enter \"Cancel\" to return to name select\nInput: ")
+                        if grade_query == "cancel":
+                            print("\nReturning to name select.\n"+line_break)
+                            break
+                        try:
+                            if int(grade_query) in gradebook[student_name]:
+                                gradebook[student_name].remove(int(grade_query))
+                                print(f"\nRemoved grade {grade_query} from student {student_name}.")
+                                return
+                            else:
+                                print("\nGrade not in gradebook\n")
+                        except ValueError:
+                            print("\nInput not recognized\n")
         if not(name_recognized):
             print("\nName not recognized.\n")
 
@@ -118,27 +179,60 @@ def view_summary():
                 student_average+=grade/len(gradebook[student])
             if len(gradebook[student]) != 1:
                 print(f" Average: {student_average:.2f}",end="")
+            print("   ",end="")
+            calc_letter(student_average)
             if student_average > highest_grade:
                 highest_grade = student_average
                 highest_students = [student]
             elif student_average == highest_grade:
                 highest_students.append(student)
         else:
-            print(f"\n - {student} has no grades.",end="")
-    print("\nHighest grade belongs to ",end="")
-    print(*highest_students,sep=", ",end="")
-    print(f" with a grade of {highest_grade:.2f}")
-    
+            print(f"\n - Student {student} has no grades.",end="")
+    if highest_students != []:
+        print("\nThe highest grade belongs to ",end="")
+        print(*highest_students,sep=", ",end="")
+        print(f" with a grade of {highest_grade:.2f} and a letter grade of ",end="")
+        calc_letter(highest_grade)
+    print()
+
+def calc_letter(grade):
+    grade = round(grade, 2)
+    if grade >= 96.67:
+        print("A+",end="")
+    elif grade >= 93.33:
+        print("A",end="")
+    elif grade >= 90:
+        print("A-",end="")
+    elif grade >= 86.67:
+        print("B+",end="")
+    elif grade >= 83.33:
+        print("B",end="")
+    elif grade >= 80:
+        print("B-",end="")
+    elif grade >= 76.67:
+        print("C+",end="")
+    elif grade >= 70:
+        print("C",end="")
+    elif grade >= 60:
+        print("D",end="")
+    else:
+        print("F",end="")
+        
 
 while True:
-    user_input = input(line_break+"\nWhat would you like to do?\nOptions: \"Add Student\", \"Add Grades\", \"View Summary\", or \"Exit\".\nSelect: ").lower()
-    if user_input in ("add student", "add students", "student", "students"):
+    user_input = input(line_break+"\nWhat would you like to do?\nOptions: \"Add Student\", \"Remove Student\", \"Add Grades\", \"Remove Grades\", \"View Summary\", or \"Exit\".\nSelect: ").lower()
+    if user_input in ("add student", "add students", "+student", "+students"):
         add_student()
-    elif user_input in ("add grade", "add grades", "grade", "grades"):
+    elif user_input in ("remove student", "remove students", "-student", "-students"):
+        remove_student()
+    elif user_input in ("add grade", "add grades", "+grade", "+grades"):
         add_grade()
+    elif user_input in ("remove grade", "remove grades", "-grade", "-grades"):
+        remove_grade()
     elif user_input in ("view summary", "view", "summary"):
         view_summary()
     elif user_input in ("end", "exit", "stop", "leave"):
+        print(line_break)
         break
     else:
         print("\nUser input not recognized.")
