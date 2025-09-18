@@ -172,22 +172,23 @@ def view_summary():
     print(line_break+"\nGrade summary:",end="")
     for student in gradebook:
         if len(gradebook[student]) != 0:
-            print(f"\n - Grades of student {student}: ",end="")
+            print(f"\n   - Grades of student {student}: ",end="")
             print(*gradebook[student],sep=", ",end="")
             student_average = 0
             for grade in gradebook[student]:
                 student_average+=grade/len(gradebook[student])
             if len(gradebook[student]) != 1:
-                print(f" Average: {student_average:.2f}",end="")
-            print("   ",end="")
+                print(f"\n       - Average: {student_average:.2f}",end="")
+            print("\n       - Letter Grade: ",end="")
             calc_letter(student_average)
+            print()
             if student_average > highest_grade:
                 highest_grade = student_average
                 highest_students = [student]
             elif student_average == highest_grade:
                 highest_students.append(student)
         else:
-            print(f"\n - Student {student} has no grades.",end="")
+            print(f"\n   - Student {student} has no grades.")
     if highest_students != []:
         print("\nThe highest grade belongs to ",end="")
         print(*highest_students,sep=", ",end="")
