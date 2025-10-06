@@ -46,3 +46,15 @@ print(pennData[pennData["GPA"]>3.5])
 # Data of first student in the dataframe
 print(f"\n{lineBreak}\n\nFirst Student Data\n")
 print(pennData.iloc[0])
+'''
+pennData.groupby('Year')['GPA'].mean().plot(kind='bar')
+plt.title('Average GPA per year')
+plt.xlabel('Year')
+plt.ylabel('Average GPA')
+plt.show()
+'''
+df['GPA'].plot(kind='hist', bins=5, edgecolor='Black')
+plt.title('GPA Distribution')
+plt.xlabel('GPA')
+plt.ylabel('Number of Students')
+plt.show()
